@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="46649332-a4e0-4243-9429-035f9b361268" activeEnvironment="Default" name="RestAPI Project" resourceRoot="" soapui-version="5.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" id="a1355afa-1355-4d73-81b6-2d1496dc3caf" wadlVersion="http://wadl.dev.java.net/2009/02" name="https://api.thecatapi.com" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart=""/><con:endpoints><con:endpoint>https://api.thecatapi.com</con:endpoint></con:endpoints><con:resource name="Search" path="/v1/images/search" id="8b7b1f26-f176-42f4-8526-3050f19bb8b2"><con:settings/><con:parameters/><con:method name="Search 1" id="3ba4eeec-7fc4-421c-80f5-45b2d2634b34" method="GET"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>application/json; charset=utf-8</con:mediaType><con:status>200</con:status><con:params/><con:element>Response</con:element></con:representation><con:request name="Request 1" id="bcb80e8b-121a-444c-8ab1-e70d91334678" mediaType="application/json"><con:settings/><con:endpoint>https://api.thecatapi.com</con:endpoint><con:request/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface><con:testSuite id="81ecf609-4504-4656-bf6f-8f9bf1d226f7" name="TestStep_ImageSerch"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="5781a1f2-fd52-4e2f-81e1-a6c5b362b219" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestCase_TestStep_ImageSerch" searchProperties="true"><con:settings/><con:testStep type="restrequest" name="TestStep_ImageSerch" id="d1d16858-3249-4cca-ac72-0ab961071868"><con:settings/><con:config service="https://api.thecatapi.com" methodName="Search 1" resourcePath="/v1/images/search" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="TestStep_ImageSerch" id="b19297cc-54a5-40dd-86c5-547347514610" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://api.thecatapi.com</con:endpoint><con:request/><con:originalUri>https://api.thecatapi.com/v1/images/search</con:originalUri><con:assertion type="GroovyScriptAssertion" id="9eaab20c-bdd9-4342-b6c7-01b1b862bb0b" name="Script Assertion"><con:configuration><scriptText>//1.Timestamp Validations
+def actualHTTPResponseTime = messageExchange.getTimeTaken()
+log.info(actualHTTPResponseTime)
+def expectedHTTPResponseTime = 5000
+assert actualHTTPResponseTime &lt;= expectedHTTPResponseTime
+
+//2.Response Status Code Validations
+def expectedHTTPResponse = ['HTTP/1.1 200 OK']
+def headers = messageExchange.response.responseHeaders
+def actualHTTPResponse = headers['#status#']
+log.info(actualHTTPResponse)
+assert expectedHTTPResponse == actualHTTPResponse</scriptText></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:tearDownScript>import com.eviware.soapui.support.GroovyUtils
+
+//Save the contents to a file
+def saveToFile(file, content) {
+    if (!file.parentFile.exists()) {
+         file.parentFile.mkdirs()
+         log.info "Directory did not exist, created"
+    }
+    file.write(content) 
+    assert file.exists(), "${file.name} not created"
+}
+
+//Get the project path
+def dataFolder =  new GroovyUtils(context).projectPath
+
+//Create today's date for storing response
+def today = new Date().format("yyyy-MM-dd'_T_'HH a")
+
+def filePrefix = "${dataFolder}/Results_${today}/RestAPI Project_${today}/Test_Response_${today}" as String
+
+def fileNamePart = new Date().format("yyyy-MM-dd'T'HH.mm.ss a")
+
+//Check if there is response
+//assert context.request, "Request is empty or null"
+
+//create file object with file name
+def file = new File("${filePrefix}/TestCase_TestStep_ImageSerch_${fileNamePart}.json")
+
+//Call above method to save the content into file
+saveToFile(file, context.response)</con:tearDownScript><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="dfade4ab-5bde-4d17-a320-57648b31ae5d" name="TestModuleRunner" disabled="true"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="9d3d2c72-12e0-4a2a-b05c-a9825d3c5f66" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestCaseModuleRunner" searchProperties="true"><con:settings/><con:testStep type="groovy" name="TestCaseModuleRunner" id="eac1148c-9e42-41bf-9acd-5cab24025a9a"><con:settings/><con:config><script>def projectName=testRunner.getTestCase().getTestSuite().getProject().getWorkspace().getProjectByName("RestAPI Project")
+projectName.run(null,true)
+//testRunner.testCase.getTestStepByName("CreateReport").run(testRunner, context)
+log.info (" === "+projectName.getName().toString()+" - Executed successfully")
+</script></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:afterRunScript>/**
+*Without Modification
+* Below is the TearDown script for SoapUI Project level
+* Which create a custom report in a  given file
+* Modify the variable "reportFileName" below
+*
+**/
+//Modify the file as needed for report file
+//def reportFileName = '/tmp/abctestreport.txt'
+//Adding the below as user wants specific directory
+//Get the project path
+
+def dataFolder =  new com.eviware.soapui.support.GroovyUtils(context).projectPath
+
+//Create today's date for storing response
+def today = new Date().format("yyyy-MM-dd'_T_'HH a")
+
+
+def filePrefix = "${dataFolder}/Results_${today}/RestAPI Project_${today}/Test_Summary_${today}" as String
+
+def fileNamePart = new Date().format("yyyy-MM-dd'_T_'HH.mm.ss a")
+
+//creating filename dynamically.
+def reportFileName = "${filePrefix}/RestAPI Project_TestReport_${fileNamePart}.txt" as String
+
+
+//NOTE: Not required to edit beyond this point
+
+/**
+* This class holds the test case details
+**/
+class TestCaseResultHolder {
+    def log
+    Map&lt;String, String> properties = [:]
+    boolean status
+
+    def createProperties(testCase) {
+        testCase.getPropertyNames().each { key ->
+            properties[key] = testCase.getPropertyValue(key)
+        }       
+    }
+
+    def getCaseResult(caseRunner, caseName) {
+        log.info "Checking test case status ${caseName}"
+        if ( caseRunner.status.toString() == 'FAILED' ){
+            log.error "Test case $caseName has failed"
+            for ( stepResult in caseRunner?.results ){
+                stepResult.messages.each() { msg -> log.info msg }
+            }
+            return false
+        } else {
+            log.info "${caseName} is passed"
+        }
+        true
+    }
+
+    def buildCaseResult(caseRunner, caseName) {
+        status = getCaseResult(caseRunner, caseName)
+        if (!status) {
+            createProperties(caseRunner.testCase)
+        }
+    }
+
+}
+
+/**
+* This class holds the test suite details
+**/
+class SuiteResultsHolder {
+
+    def log
+    Map&lt;String, TestCaseResultHolder> casaeResults = [:]
+    int testCaseCount = 0
+    int passedCasesCount = 0
+    int failedCasesCount = 0
+
+    def buildSuiteResults(suiteRunner, suiteName){      
+        log.info "Building results of test suite ${suiteName}"
+        for ( caseRunner in suiteRunner?.results ) {
+            def caseName = caseRunner.testCase.name
+            testCaseCount++
+            def tcHolder = new TestCaseResultHolder(log: log)
+            tcHolder.buildCaseResult(caseRunner, caseName)          
+            casaeResults[caseName] = tcHolder
+            if (tcHolder.status) {
+                passedCasesCount++
+            } else {
+                failedCasesCount++
+            }
+        }
+    }
+
+    def getStatus() {
+        (0 &lt; failedCasesCount) ? false : true
+    }
+
+}
+
+/**
+* This class holds the project details
+**/
+class ProjectResultsHolder {
+
+    def log
+    Map&lt;String, SuiteResultsHolder> suiteResults = [:]
+    int suiteCount = 0
+    int passedSuitecount = 0
+    int failedSuiteCount = 0
+
+    def buildProjectResults(projectRunner, projectName) {
+        log.info "Building results of test project ${projectName}"          
+        for(suiteRunner in projectRunner?.results) {
+            def suiteName =  suiteRunner.testSuite.name
+            suiteCount++
+            def suiteResultsHolder = new SuiteResultsHolder(log: log)
+            suiteResultsHolder.buildSuiteResults(suiteRunner, suiteName)
+            suiteResults[suiteName] = suiteResultsHolder
+            if (suiteResultsHolder.status) {
+                passedSuitecount++
+            } else {
+                failedSuiteCount++
+            }
+        }
+    }
+
+    def getStatus() {
+        (0 &lt; failedSuiteCount) ? false : true
+    }
+
+}
+
+//Get the status string based on boolean
+def getResult(status){ status == true ? 'SUCCEED' : 'FAILED'}
+
+//Draws a line
+def drawLine(def letter = ' ', def count = 0) { letter.multiply(count)}
+
+//Gets the summary report
+def getSummaryReport(project, projectResultHolder) {
+    def report = new StringBuffer()
+    report.append(drawLine()).append('\r\n')
+    report.append("Test Execution Summary\r\n")
+    report.append(drawLine('', 0)).append('\r\n')
+    report.append("Project : ${project.name}\r\n")
+    report.append("Result : ${getResult(projectResultHolder.status)}\r\n")
+    report.append("Total test suites executed: ${projectResultHolder.suiteCount}\r\n")
+    report.append("Test suites passed: ${projectResultHolder.passedSuitecount}\r\n")
+    report.append("Test suites failed: ${projectResultHolder.failedSuiteCount}\r\n")
+    report.append(drawLine()).append('\n')
+    report
+}
+
+//Gets the test case report
+def getTestCaseReport(testCaseReport) {
+    def report = new StringBuffer()
+    report.append(drawLine('', 0)).append('\n')
+    report.append("Test Case Details:\r\n")
+    report.append(drawLine('', 0)).append('\n')
+    testCaseReport.each { kase, tcReport ->
+        report.append("Name : ${kase}\r\n")
+        report.append("Status : ${getResult(tcReport.status)}\r\n")
+        if (!tcReport.status) {
+            report.append("Properties : ${tcReport.properties.toString()}\n")
+        }
+    }
+    report
+}
+
+//Get the detailed report
+def getDetailedReport(projectResultHolder) {
+    def report = new StringBuffer()
+    report.append(drawLine()).append('\r\n')
+    report.append("Test Execution Detailed Report\r\n")
+    report.append(drawLine()).append('\n')
+    projectResultHolder.suiteResults.each { suite, details ->
+        report.append("\r\nTest Suite : ${suite}\r\n")
+        report.append("\r\nResult : ${getResult(details.status)}\r\n")
+        report.append("Total Cases : ${details.testCaseCount}\r\n")
+        report.append("Cases Passed : ${details.passedCasesCount}\r\n")
+        report.append("Cases Failed: ${details.failedCasesCount}\r\n")
+        report.append(getTestCaseReport(details.casaeResults))
+        report.append(drawLine()).append('\n')
+        report.append(drawLine()).append('\n')
+    }
+    report
+}
+
+//Save the contents to a file
+def saveToFile(file, content) {
+    if (!file.parentFile.exists()) {
+        file.parentFile.mkdirs()
+        log.info "Directory did not exist, created"
+    }
+    file.write(content) 
+    assert file.exists(), "${file.name} not created"
+}
+
+def holder = new ProjectResultsHolder(log: log)
+holder.buildProjectResults(runner, project.name)
+
+def finalReport = new StringBuffer()
+finalReport.append(getSummaryReport(project, holder))
+finalReport.append(getDetailedReport(holder))
+def reportFile = new File(reportFileName)
+saveToFile(reportFile, finalReport.toString())</con:afterRunScript><con:sensitiveInformation/></con:soapui-project>
